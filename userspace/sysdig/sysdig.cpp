@@ -43,7 +43,7 @@ limitations under the License.
 #include "chisel_utils.h"
 #include "chisel_fields_info.h"
 #endif
-#include "fields_info.h"
+// #include "fields_info.h"
 #include "utils.h"
 #include "plugin.h"
 #include "plugin_manager.h"
@@ -478,8 +478,8 @@ void print_summary_table(sinsp* inspector,
 
 		if(e.m_is_unsupported_syscall)
 		{
-			tstr = einfo->m_syscall_info_table[e.m_id / 2].name;
-			tstr.resize(16, ' ');
+			// tstr = scap_get_ppm_sc_name(e.m_id / 2);
+			// tstr.resize(16, ' ');
 
 			printf("%s%s%" PRIu64 "\n",
 				(PPME_IS_ENTER(e.m_id))? "> ": "< ",
@@ -1863,7 +1863,7 @@ sysdig_init_res sysdig_init(int argc, char **argv)
 					goto exit;
 				}
 
-				inspector->filter_proc_table_when_saving(true);
+				// inspector->filter_proc_table_when_saving(true);
 			}
 			else
 			{

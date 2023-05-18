@@ -609,25 +609,25 @@ std::vector<std::string> plugin_utils::get_event_sources(sinsp *inspector)
         // the plugin, in case it was not registered already
         pl.get_plugin(inspector);
     }
-    return inspector->get_plugin_manager()->sources();
+    return {};
 }
 
 std::vector<std::unique_ptr<sinsp_filter_check>> plugin_utils::get_filterchecks(sinsp *inspector, const std::string& source)
 {
     std::vector<std::unique_ptr<sinsp_filter_check>> list;
-    list.push_back(std::unique_ptr<sinsp_filter_check>(inspector->new_generic_filtercheck()));
+    // list.push_back(std::unique_ptr<sinsp_filter_check>(inspector->new_generic_filtercheck()));
 
-    // todo(jasondellaluce): remove this once we support extracting plugin fields from syscalls
-    if (source != s_syscall_source)
-    {
-        for (auto &pl : m_plugins)
-        {
-            auto plugin = pl.get_plugin(inspector);
-            if (plugin->caps() & CAP_EXTRACTION && plugin->is_source_compatible(source))
-            {
-                list.push_back(std::unique_ptr<sinsp_filter_check>(sinsp_plugin::new_filtercheck(plugin)));
-            }
-        }
-    }
+    // // todo(jasondellaluce): remove this once we support extracting plugin fields from syscalls
+    // if (source != s_syscall_source)
+    // {
+    //     for (auto &pl : m_plugins)
+    //     {
+    //         auto plugin = pl.get_plugin(inspector);
+    //         if (plugin->caps() & CAP_EXTRACTION && plugin->is_source_compatible(source))
+    //         {
+    //             list.push_back(std::unique_ptr<sinsp_filter_check>(sinsp_plugin::new_filtercheck(plugin)));
+    //         }
+    //     }
+    // }
     return list;
 }

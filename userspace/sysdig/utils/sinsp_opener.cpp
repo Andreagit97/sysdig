@@ -50,15 +50,7 @@ void sinsp_opener::open(sinsp* inspector) const
 
 #if defined(HAS_CAPTURE)
     /* Populate syscalls of interest */
-    std::unordered_set<uint32_t> sc_of_interest = inspector->get_all_ppm_sc();
-
-    /* Populate tracepoints of interest */
-    std::unordered_set<uint32_t> tp_of_interest = inspector->get_all_tp();
-    if(!options.page_faults)
-    {
-        tp_of_interest.erase(PAGE_FAULT_USER);
-        tp_of_interest.erase(PAGE_FAULT_KERN);
-    }
+    libsinsp::events::set<ppm_sc_code> sc_of_interest = libsinsp::events::all_sc_set();
 
     if(udig.enabled)
     {
@@ -77,7 +69,7 @@ void sinsp_opener::open(sinsp* inspector) const
 #ifdef HAS_MODERN_BPF
 		if(bpf.modern)
 		{
-			inspector->open_modern_bpf(DEFAULT_DRIVER_BUFFER_BYTES_DIM, bpf.cpus_for_each_syscall_buffer, true, sc_of_interest, tp_of_interest);
+			inspector->open_modern_bpf(DEFAULT_DRIVER_BUFFER_BYTES_DIM, bpf.cpus_for_each_syscall_buffer, true, sc_of_interest);
 			return;
 		}
 #endif
@@ -95,7 +87,7 @@ void sinsp_opener::open(sinsp* inspector) const
 
         try
         {
-            inspector->open_bpf(probe, DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest, tp_of_interest);
+            inspector->open_bpf(probe, DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest);
         }
         catch(const sinsp_exception& e)
         {
@@ -103,7 +95,7 @@ void sinsp_opener::open(sinsp* inspector) const
             {
                 fprintf(stderr, "Unable to load the BPF probe\n");
             }
-            inspector->open_bpf(probe, DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest, tp_of_interest);
+            inspector->open_bpf(probe, DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest);
         }
 
         // Enable gathering the CPU from the kernel module
@@ -114,7 +106,7 @@ void sinsp_opener::open(sinsp* inspector) const
     // default to kernel module if no other option is specified
     try
     {
-        inspector->open_kmod(DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest, tp_of_interest);
+        inspector->open_kmod(DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest);
     }
     catch(const sinsp_exception& e)
     {
@@ -124,7 +116,7 @@ void sinsp_opener::open(sinsp* inspector) const
         {
             fprintf(stderr, "Unable to load the driver\n");
         }
-        inspector->open_kmod(DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest, tp_of_interest);
+        inspector->open_kmod(DEFAULT_DRIVER_BUFFER_BYTES_DIM, sc_of_interest);
     }
 
     // Enable gathering the CPU from the kernel module
